@@ -16,7 +16,7 @@ var hangImage = document.getElementById("hangImage");
 var leftCont = document.getElementById("left-cont");
 
 /*::::::GLOBALS::::::*/
-var gameChances = 4;
+var gameChances = 10;
 var userWins = 0;
 var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
   "T", "U", "V", "W", "X", "Y", "Z"
