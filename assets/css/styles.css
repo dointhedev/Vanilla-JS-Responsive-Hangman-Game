@@ -1,0 +1,69 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*----------------------------------------------------------------
+[Table of contents]
+
+1. GLOBAL 
+2. SITE COLORS
+3. TYPOGRAPHY
+4. ELEMENTS
+5. MOBILE
+
+-------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------
+1. GLOBAL 
+-------------------------------------------------------------------*/
+body {
+    background-image: url("../img/circles-light.png") !important;
+    font-family: 'Georgia', Times, Times New Roman, serif !important;
+}
+
+/*----------------------------------------------------------------
+2. SITE COLORS
+-------------------------------------------------------------------*/
+.greenBg{
+  background-color: darkcyan;
+  border: none;
+}
+.greenbrdr{
+  border: 1px solid darkcyan;
+}
+/*----------------------------------------------------------------
+1. TYPOGRAPHY 
+-------------------------------------------------------------------*/
+
+p span {
+  color: #c4def0;
+}
+
+
+/*----------------------------------------------------------------
+1. ELEMENTS
+-------------------------------------------------------------------*/
+#game_scoreBoard, #game_footer{
+    background-color: darkcyan;
+    color: #fff;
+}
+
+#alreadyTyped{
+width:100%;
+}
+.letter {
+    width: 30px;
+    height: 30px;
+    border-style: solid;
+    padding: 2px;
+    margin: 2px;
+  }
+
+  .letter-button-color {
+    color: darkcyan;
+  }
+
+  .letter-button:hover {
+    background-color: #000;
+    color: #fff;
+    cursor: pointer;
+  }
