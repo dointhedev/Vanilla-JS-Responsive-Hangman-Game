@@ -16,7 +16,6 @@ var typedBlock = document.getElementById("typedBlock");
 var logo = document.getElementById("logo");
 var hangImage = document.getElementById("hangImage");
 var leftCont = document.getElementById("left-cont");
-var bubbleSound = document.createElement("audio");
 
 /*::::::GLOBALS::::::*/
 var gameChances = 10;
@@ -108,7 +107,11 @@ function enableButtons() {
 	var titles = document.createElement("H5");
 	titles.classList.add("crntWrd");
 	titles.innerHTML += "Current Word:";
-	currentBlock.appendChild(titles);
+  currentBlock.appendChild(titles);
+  var results = document.createElement("SPAN");
+  results.classList.add("results");
+  currentBlock.appendChild(results);
+ 
 
 	var typed = document.createElement("H5");
 	typed.classList.add("typed");
@@ -181,12 +184,21 @@ function playingLogic() {
 		if (randomNames.includes(this.getAttribute("data-letter")) && (gameChances >= 0)) {
 
 			// I am still in-middle of completing the winning logic. This is the only thing pending after this commit. I will continue to work on it after the deadline just for the record this function is not was not 100% completed by the deadline. 
-			this.classList.add("d-none");
+      this.classList.add("d-none");
 
-			console.log(rightAnswer);
-			console.log(randomNames);
 			// add correct guess to the array 
 			rightAnswer.splice(this.getAttribute("data-letter").indexOf('randomNames'), 0, this.getAttribute("data-letter"));
+      alert("You chose the right answer of " + rightAnswer.join() + " However, this game sucks. Please continue" );
+      currentBlock.innerHTML = "";
+      var titles = document.createElement("H5");
+      titles.classList.add("crntWrd");
+      titles.innerHTML += "Current Word: <br>" + rightAnswer.join();
+      currentBlock.appendChild(titles);
+      
+
+
+
+
 
 		} else {
 			console.log("else");
