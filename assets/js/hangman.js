@@ -12,6 +12,7 @@ var scoreBoard = document.getElementById("scoreBoard");
 var winBoard = document.getElementById("userWins");
 var audioBoard = document.getElementById("sound_controls");
 var currentBlock = document.getElementById("currentBlock");
+var blankWord = document.getElementById("word-blanks");
 var typedBlock = document.getElementById("typedBlock");
 var logo = document.getElementById("logo");
 var hangImage = document.getElementById("hangImage");
@@ -20,27 +21,30 @@ var leftCont = document.getElementById("left-cont");
 /*::::::GLOBALS::::::*/
 var gameChances = 10;
 var userWins = 0;
+var emptyNum = 0;
 var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
 	"T", "U", "V", "W", "X", "Y", "Z"
 ];
 var hangedNames = ["TRIANGLE", "GUITAR", "SAX", "FLUTE", "VIOLA", "HARP", "CLARINET", "PIANO", "DRUMS"];
 var randomNames = hangedNames[Math.floor(Math.random() * hangedNames.length)];
-var rightAnswer = [];
-
+var rightAnswerLetters = [];
+var blanksAndSuccesses = [];
+var wrongGuesses = [];
+var letterGuessed = "";
 console.log(randomNames);
-
-function loadAudio() {
-	var openingSound = document.createElement("audio");
-	openingSound.setAttribute("src", "assets/audio/opening.mp3");
-	openingSound.currentTime = 14;
-	openingSound.play();
-}
 
 function clearBoard() {
 	hangImage.innerHTML = "";
 	logo.innerHTML = "";
 	currentBlock.innerHTML = "";
 	typedBlock.innerHTML = "";
+}
+
+function loadAudio() {
+	var openingSound = document.createElement("audio");
+	openingSound.setAttribute("src", "assets/audio/opening.mp3");
+	openingSound.currentTime = 14;
+	openingSound.play();
 }
 
 function homeScreen() {
@@ -126,17 +130,27 @@ function enableButtons() {
 }
 
 function playingLogic() {
+  
+  // game set up  
+// CRITICAL LINE
+  // Here we *reset* the guess and success array at each round.
+  blanksAndSuccesses = [];
 
-	// game set up  
-	// loop through the length of the answer and make buttons  
-	for (var x = 0; x < randomNames.length; x++) {
-		var name = randomNames[x];
-		var hiddenChoice = document.createElement("BUTTON");
-		hiddenChoice.classList.add("letter", "letter-button", "letter-button-color");
-		hiddenChoice.innerHTML += "_";
-		currentBlock.classList.add("greenbrdr", "py-3", "mb-4");
-		currentBlock.appendChild(hiddenChoice);
-	}
+  // CRITICAL LINE
+  // Here we *reset* the wrong guesses from the previous round.
+  wrongGuesses = [];
+    currentBlock.innerHTML += " " ;
+    var  hiddenChoices = document.createElement("H3");
+    hiddenChoices.setAttribute("id","word-blanks");
+    rightAnswerLetters = randomNames.split("");
+    emptyNum =  rightAnswerLetters.length;
+    for (var i = 0; i < emptyNum; i++) {
+      blanksAndSuccesses.push(  " " + "_" + " " );
+    }
+    hiddenChoices.innerHTML += blanksAndSuccesses.join("&nbsp");
+    currentBlock.appendChild(hiddenChoices);
+
+
 	// create the keyboard  
 	for (var i = 0; i < letters.length; i++) {
 		var answer = letters[i];
@@ -147,7 +161,59 @@ function playingLogic() {
 		keyContainer.appendChild(letterBtn);
 		letterBtn.onclick = beginGame;
 
-	}
+  }
+  
+
+  function beginGame(event) {
+
+
+
+
+
+    if (randomNames.includes(this.getAttribute("data-letter")) && (gameChances >= 0)) {
+
+			// I am still in-middle of completing the winning logic. This is the only thing pending after this commit. I will continue to work on it after the deadline just for the record this function is not was not 100% completed by the deadline. 
+      this.classList.add("d-none");
+	gameChances--;
+			// add correct guess to the array 
+			rightAnswer.splice(this.getAttribute("data-letter").indexOf('randomNames'), 0, this.getAttribute("data-letter"));
+      alert("You chose the right answer of " + rightAnswer.join() + " However, this game sucks. Please continue" );
+      currentBlock.innerHTML = "";
+      var titles = document.createElement("H5");
+      titles.classList.add("crntWrd");
+      titles.innerHTML += "Current Word: <br>" + rightAnswer.join();
+      currentBlock.appendChild(titles);
+    
+    
+      
+
+
+
+		} else {
+			console.log("else");
+			gameChances--;
+			var score = document.getElementById("score");
+			score.innerHTML = gameChances;
+
+			this.classList.add("d-none");
+			hangImage.innerHTML = "";
+			hangManImage1();
+			var pressedBtn = document.createElement("BUTTON");
+			pressedBtn.classList.add("d-inline-block", "letter", "letter-button-color");
+			pressedBtn.innerHTML += this.getAttribute("data-letter");
+			typedBlock.appendChild(pressedBtn);
+			if (gameChances === 0) {
+				keyContainer.innerHTML = "";
+				var keyBoard = document.createElement("SPAN");
+				keyBoard.classList.add("typed", "text-danger", "d-block", "py-3");
+				keyBoard.innerHTML += "<h1>NATURAL SELECTION IS COMING FOR YOU!!!!</h1> <button id='resetBtn' class='startButton btn btn-primary greenBg my-3'>Start The Game</button> ";
+				keyContainer.appendChild(keyBoard);
+				var resetButton = document.getElementById("resetBtn")
+				resetButton.addEventListener("click", function (event) {
+					location.reload();
+				});
+
+  }}}}
 	// game starts 
 	/* 
 
@@ -172,9 +238,12 @@ function playingLogic() {
 	end while 
 	  Player Loses 
 	  Game Resets 
-
-	*/
-	function beginGame(event) {
+الفصحى اللغة العربية
+	*//*
+function beginGame(event) {*/
+    // Breakdown number of letters in word
+  
+/*
 		// rightAnswer.length = randomNames.length(); 
 		for (var i; i >= randomNames.length; i++) {
 			rightAnswer.push("", i);
@@ -185,7 +254,7 @@ function playingLogic() {
 
 			// I am still in-middle of completing the winning logic. This is the only thing pending after this commit. I will continue to work on it after the deadline just for the record this function is not was not 100% completed by the deadline. 
       this.classList.add("d-none");
-
+	gameChances--;
 			// add correct guess to the array 
 			rightAnswer.splice(this.getAttribute("data-letter").indexOf('randomNames'), 0, this.getAttribute("data-letter"));
       alert("You chose the right answer of " + rightAnswer.join() + " However, this game sucks. Please continue" );
@@ -196,7 +265,7 @@ function playingLogic() {
       currentBlock.appendChild(titles);
       
 
-
+      
 
 
 
@@ -228,7 +297,7 @@ function playingLogic() {
 		}
 	}
 }
-
+*/
 function startGame() {
 	homeScreen();
 	clearBoard();
