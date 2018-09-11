@@ -1,38 +1,33 @@
-// JavaScript Document
 //Start of the application
-document.addEventListener('DOMContentLoaded', function () {
-	loadAudio();
-	homeScreen();
-});
+document.addEventListener('DOMContentLoaded', homeScreen);
 
 /*::::::DOM CACHE::::::*/
-var keyContainer = document.getElementById("keyContainer");
-var alreadyTyped = document.getElementById("alreadyTyped");
-var scoreBoard = document.getElementById("scoreBoard");
-var winBoard = document.getElementById("userWins");
-var audioBoard = document.getElementById("sound_controls");
-var currentBlock = document.getElementById("currentBlock");
-var blankWord = document.getElementById("word-blanks");
-var typedBlock = document.getElementById("typedBlock");
-var logo = document.getElementById("logo");
-var hangImage = document.getElementById("hangImage");
-var leftCont = document.getElementById("left-cont");
+const keyContainer = document.getElementById("keyContainer");
+const alreadyTyped = document.getElementById("alreadyTyped");
+const scoreBoard = document.getElementById("scoreBoard");
+const winBoard = document.getElementById("userWins");
+const audioBoard = document.getElementById("sound_controls");
+const currentBlock = document.getElementById("currentBlock");
+const blankWord = document.getElementById("word-blanks");
+const typedBlock = document.getElementById("typedBlock");
+const logo = document.getElementById("logo");
+const hangImage = document.getElementById("hangImage");
+const leftCont = document.getElementById("left-cont");
+const openingSound = document.createElement("audio");
 
-/*::::::GLOBALS::::::*/
-var gameChances = 10;
-var userWins = 0;
-var emptyNum = 0;
-var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+/*::::::COUNTERS::::::*/
+let gameChances = 0;
+let userWins = 0;
+let emptyNum = 0;
+
+/*::::::DATA-SETS::::::*/
+const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
 	"T", "U", "V", "W", "X", "Y", "Z"
 ];
-var hangedNames = ["TRIANGLE", "GUITAR", "SAX", "FLUTE", "VIOLA", "HARP", "CLARINET", "PIANO", "DRUMS"];
-var randomNames = hangedNames[Math.floor(Math.random() * hangedNames.length)];
-var rightAnswerLetters = [];
-var blanksAndSuccesses = [];
-var wrongGuesses = [];
-var letterGuessed = "";
-console.log(randomNames);
+const hangedNames = ["OBOE", "TRIANGLE", "BAGPIPE", "SAX", "FLUTE", "VIOLA", "HARP", "CLARINET", "PIANO", "DRUMS"];
+let blanksAndSuccesses = [];
 
+// Function to clear all HTML elements.
 function clearBoard() {
 	hangImage.innerHTML = "";
 	logo.innerHTML = "";
@@ -40,284 +35,288 @@ function clearBoard() {
 	typedBlock.innerHTML = "";
 }
 
+// Function to load the audio when the game loads.
 function loadAudio() {
-	var openingSound = document.createElement("audio");
 	openingSound.setAttribute("src", "assets/audio/opening.mp3");
 	openingSound.currentTime = 14;
 	openingSound.play();
 }
 
+// Function for the audio controls.
+function audioSet() {
+	const audioTrk = document.getElementById("audio");
+	const icon = document.getElementById("icon-s");
+
+	let action = "Pause";
+	if (audioTrk.innerText === "Pause Audio:") {
+		openingSound.pause();
+		action = "Start";
+		icon.classList.replace("fa-volume-off", "fa-volume-up");
+	} else {
+		action = "Pause";
+		openingSound.play();
+		icon.classList.replace("fa-volume-up", "fa-volume-off");
+	}
+	// Use of ES6 backticks.
+	audioTrk.innerHTML = `${action} Audio:`;
+	audioTrk.appendChild(icon);
+}
+
+// Function generates the home screen.
 function homeScreen() {
 	loadLogo();
-	var titles = document.createElement("H3");
+	loadAudio();
+	const titles = document.createElement("H3");
 	titles.classList.add("welcome");
 	titles.innerHTML += "Welcome to Hangman: A Musical Journey";
 	currentBlock.classList.add("py-3", "mb-4");
 	currentBlock.appendChild(titles);
-	var playButton = document.createElement("BUTTON");
+	const playButton = document.createElement("BUTTON");
 	playButton.classList.add("startButton", "btn", "btn-primary", "greenBg", "my-3");
 	playButton.innerHTML += "Start The Game";
 	currentBlock.appendChild(playButton);
 
-	var giphy = document.createElement("DIV");
+	const giphy = document.createElement("DIV");
 	giphy.classList.add("py-3");
 
 	giphy.innerHTML += "<iframe src='https://giphy.com/embed/l2JhGk8rR9WFLEDQY' width='426' height='480' frameBorder='0' class='giphy-embed' allowFullScreen></iframe><p><a href='https://giphy.com/gifs/gifitup-gif-it-up-europeana-l2JhGk8rR9WFLEDQY'>via GIPHY</a></p>";
 	hangImage.appendChild(giphy);
-
+	// Onclick event to start the game.
 	playButton.onclick = startGame;
 }
 
 function loadScoreBoard() {
-	//load the remaining guesses
-	var score = document.createElement("P");
+	// Load the remaining guesses.
+	const score = document.createElement("P");
 	score.classList.add("score");
+
+	// I find this easier to read then the audio control solution below. I added both to show the options.
 	score.innerHTML += "<span>Guesses Remaining:</span> " + "<span id='score' class='text-white'>" + gameChances + "</span>";
 	scoreBoard.appendChild(score);
-	//load the users wins 
-	var wins = document.createElement("P");
+
+	// Load the user wins.
+	const wins = document.createElement("P");
 	wins.classList.add("win");
-	wins.innerHTML += "<span>User Wins:</span> " + userWins;
+	wins.innerHTML += "<span>User Wins:</span> " + "<span id='wins' class='text-white'>" + userWins + "</span>";
 	winBoard.appendChild(wins);
-	//load the audio controls
-	var audio = document.createElement("P");
+
+	// Load the audio controls. More complicated to read I feel. 
+	const audio = document.createElement("P");
 	audio.classList.add("audioControls");
-	audio.innerHTML += "<span>Pause Audio:&nbsp;</span> <i class='fa fa-volume-off'></i></p>";
+	const icon = document.createElement("i");
+	icon.setAttribute("id", "icon-s");
+	icon.classList.add("pl-2", "cursor", "fa", "fa-volume-off", "text-white");
+	const span = document.createElement("SPAN");
+	span.setAttribute("id", "audio");
+	span.classList.add("cursor");
+	span.innerText = "Pause Audio:";
+	span.appendChild(icon);
+	audio.addEventListener("click", audioSet);
+	audio.appendChild(span);
 	audioBoard.appendChild(audio);
 }
 
+// Function to load the logo.
 function loadLogo() {
-	var imgLogo = document.createElement("IMG");
+	const imgLogo = document.createElement("IMG");
 	imgLogo.classList.add("logo-img", "img-fluid");
 	imgLogo.setAttribute("src", "assets/img/hangman-logo.png");
 	logo.appendChild(imgLogo);
 }
 
-function hangManImage() {
-	var img = document.createElement("IMG");
+// Function to load the logo.
+function hangManImgInit() {
+	const img = document.createElement("IMG");
 	img.classList.add("hang-img", "img-fluid");
 	img.setAttribute("src", "assets/img/hangman.png");
 	hangImage.appendChild(img);
 }
 
-function hangManImage1() {
-	var img = document.createElement("IMG");
+// Function to transition the img src depending on the game round. 
+function hangManImage() {
+	const img = document.createElement("IMG");
 	img.classList.add("hang-img", "img-fluid");
 	img.setAttribute("src", "assets/img/hangman" + (10 - gameChances) + ".png");
 	hangImage.appendChild(img);
 }
 
-function enableButtons() {
-	var titles = document.createElement("H5");
+// Function that generates the Current Words and Wrong Letters Elements, Logo and Keyboard text. 
+function genContArea() {
+	loadLogo();
+	const titles = document.createElement("H5");
 	titles.classList.add("crntWrd");
 	titles.innerHTML += "Current Word:";
-  currentBlock.appendChild(titles);
-  var results = document.createElement("SPAN");
-  results.classList.add("results");
-  currentBlock.appendChild(results);
- 
+	currentBlock.appendChild(titles);
+	const results = document.createElement("SPAN");
+	results.classList.add("results");
+	currentBlock.appendChild(results);
 
-	var typed = document.createElement("H5");
+	const typed = document.createElement("H5");
 	typed.classList.add("typed");
 	typed.innerHTML += "Wrong Letters:";
 	typedBlock.classList.add("greenbrdr", "py-3", "mb-4");
 	typedBlock.appendChild(typed);
 
-	var keyBoard = document.createElement("SPAN");
+	const keyBoard = document.createElement("SPAN");
 	keyBoard.classList.add("typed", "keyBtns", "d-block", "py-3");
 	keyBoard.innerHTML += "Your keyboard below can save or end a life. OOOOHHH!! ";
 	keyContainer.appendChild(keyBoard);
 }
 
+// The majority of the game's functionality is in this function. 
 function playingLogic() {
-  
-  // game set up  
-// CRITICAL LINE
-  // Here we *reset* the guess and success array at each round.
-  blanksAndSuccesses = [];
+	// Clear previous data.
+	clearBoard();
+	// Generate content area.
+	genContArea();
+	// Generate default hangman img.
+	hangManImgInit();
 
-  // CRITICAL LINE
-  // Here we *reset* the wrong guesses from the previous round.
-  wrongGuesses = [];
-    currentBlock.innerHTML += " " ;
-    var  hiddenChoices = document.createElement("H3");
-    hiddenChoices.setAttribute("id","word-blanks");
-    rightAnswerLetters = randomNames.split("");
-    emptyNum =  rightAnswerLetters.length;
-    for (var i = 0; i < emptyNum; i++) {
-      blanksAndSuccesses.push(  " " + "_" + " " );
-    }
-    hiddenChoices.innerHTML += blanksAndSuccesses.join("&nbsp");
-    currentBlock.appendChild(hiddenChoices);
+	// game setup.
+	const randomNames = hangedNames[Math.floor(Math.random() * hangedNames.length)];
 
+	// Here we *reset* the gamechances and blanksAndSuccesses array.
+	blanksAndSuccesses = [];
+	gameChances = 10;
 
-	// create the keyboard  
-	for (var i = 0; i < letters.length; i++) {
-		var answer = letters[i];
-		var letterBtn = document.createElement("BUTTON");
-		letterBtn.classList.add("letter", "letter-button", "letter-button-color");
-		letterBtn.setAttribute("data-letter", answer);
-		letterBtn.innerHTML += answer;
-		keyContainer.appendChild(letterBtn);
-		letterBtn.onclick = beginGame;
+	// Update DOM score.
+	const score = document.getElementById("score");
+	score.innerHTML = gameChances;
 
-  }
-  
+	// Generate blank characters.
+	const hiddenChoices = document.createElement("H3");
+	hiddenChoices.setAttribute("id", "word-blanks");
+	for (let i = 0; i < randomNames.split("").length; i++) {
+		blanksAndSuccesses.push(" " + "_" + " ");
+	}
 
-  function beginGame(event) {
+	hiddenChoices.innerHTML += blanksAndSuccesses.join("");
+	currentBlock.appendChild(hiddenChoices);
 
+	// Generate the keyboard.
+	genKeys()
 
-
-
-
-    if (randomNames.includes(this.getAttribute("data-letter")) && (gameChances >= 0)) {
-
-			// I am still in-middle of completing the winning logic. This is the only thing pending after this commit. I will continue to work on it after the deadline just for the record this function is not was not 100% completed by the deadline. 
-      this.classList.add("d-none");
-	gameChances--;
-			// add correct guess to the array 
-			rightAnswer.splice(this.getAttribute("data-letter").indexOf('randomNames'), 0, this.getAttribute("data-letter"));
-      alert("You chose the right answer of " + rightAnswer.join() + " However, this game sucks. Please continue" );
-      currentBlock.innerHTML = "";
-      var titles = document.createElement("H5");
-      titles.classList.add("crntWrd");
-      titles.innerHTML += "Current Word: <br>" + rightAnswer.join();
-      currentBlock.appendChild(titles);
-    
-    
-      
-
-
-
-		} else {
-			console.log("else");
-			gameChances--;
-			var score = document.getElementById("score");
-			score.innerHTML = gameChances;
-
-			this.classList.add("d-none");
-			hangImage.innerHTML = "";
-			hangManImage1();
-			var pressedBtn = document.createElement("BUTTON");
-			pressedBtn.classList.add("d-inline-block", "letter", "letter-button-color");
-			pressedBtn.innerHTML += this.getAttribute("data-letter");
-			typedBlock.appendChild(pressedBtn);
-			if (gameChances === 0) {
-				keyContainer.innerHTML = "";
-				var keyBoard = document.createElement("SPAN");
-				keyBoard.classList.add("typed", "text-danger", "d-block", "py-3");
-				keyBoard.innerHTML += "<h1>NATURAL SELECTION IS COMING FOR YOU!!!!</h1> <button id='resetBtn' class='startButton btn btn-primary greenBg my-3'>Start The Game</button> ";
-				keyContainer.appendChild(keyBoard);
-				var resetButton = document.getElementById("resetBtn")
-				resetButton.addEventListener("click", function (event) {
-					location.reload();
-				});
-
-  }}}}
-	// game starts 
-	/* 
-
-	scope an empty array the length of randomNames and an array to hold wrong guesses
-
-	while gameChances is greater than Zero  
-	  player picks a letter 
-	  if correct 
-	    !! Add the guess to the correct index of the array (something like search right through RandomNames for the letter and insert it into the array)
-	    Use var n = str.indexOf("randomNames"); //gets where to put the guess in the array 
-	      var answers = [];
-	      answers.length = randomNames.length(); 
-
-
-	    print the array - span.innerHTML = answers.join();  
-	    sound plays 
-	    
-	  else 
-	    gameChances goes down 
-	    hangman image changes (src = 'hangman' + (gameChances - 10) + '.png')
-	    add wrong letter to wrongGuesses array and print 
-	end while 
-	  Player Loses 
-	  Game Resets 
-الفصحى اللغة العربية
-	*//*
-function beginGame(event) {*/
-    // Breakdown number of letters in word
-  
-/*
-		// rightAnswer.length = randomNames.length(); 
-		for (var i; i >= randomNames.length; i++) {
-			rightAnswer.push("", i);
-		}
-		// rightAnswer(randomNames.length);
-
+	function beginGame() {
+		// Case to handle if clicked letter is in the randomName string and the game counter is not down to 0.
 		if (randomNames.includes(this.getAttribute("data-letter")) && (gameChances >= 0)) {
+			// Remove that letter from future use. 
+			this.classList.add("d-none");
+			// Create a variable for the clicked letter.
+			const letter = this.getAttribute("data-letter");
+			// pos is using the charsPos function to return the index's of the letter variable in the randomName string. 
+			const pos = charPos(randomNames, letter);
+			// ES6 iteration through the pos array to splice the specific letter into the correct index of the blanksAndSuccesses array. 
+			for (let index of pos) {
+				blanksAndSuccesses.splice(index, 1, letter);
+			}
+			// Clear currentBlock to update the inner content.
+			currentBlock.innerHTML = " ";
+			const titles = document.createElement("H5");
+			titles.classList.add("crntWrd");
+			titles.innerHTML += "Current Word: <br>" + blanksAndSuccesses.join("");
+			currentBlock.appendChild(titles);
+			// Case in which the user has won. Where the randomNames and blanksAndSuccesses match. 
+			if (randomNames === blanksAndSuccesses.join("")) {
+				userWins++;
+				typedBlock.innerHTML = " ";
+				const wins = document.getElementById("wins");
+				wins.innerHTML = userWins;
+				keyContainer.innerHTML = "";
+				const winText = document.createElement("SPAN");
+				winText.classList.add("typed", "text-success", "d-block", "py-3");
+				const h1 = document.createElement("H1");
+				h1.innerText = "YAY! You Won! Play Again?";
+				const button = createBtn("endBtn", "danger", "End The Game");
+				const button2 = createBtn("contBtn", "primary", "Continue The Game");
+				winText.appendChild(h1);
+				winText.appendChild(button);
+				winText.appendChild(button2);
+				keyContainer.appendChild(winText);
+				const endButton = document.getElementById("endBtn");
+				const contButton = document.getElementById("contBtn");
+				contButton.addEventListener("click", playingLogic);
+				endButton.addEventListener("click", restart);
+				const score = document.getElementById("score");
+				score.innerHTML = gameChances;
 
-			// I am still in-middle of completing the winning logic. This is the only thing pending after this commit. I will continue to work on it after the deadline just for the record this function is not was not 100% completed by the deadline. 
-      this.classList.add("d-none");
-	gameChances--;
-			// add correct guess to the array 
-			rightAnswer.splice(this.getAttribute("data-letter").indexOf('randomNames'), 0, this.getAttribute("data-letter"));
-      alert("You chose the right answer of " + rightAnswer.join() + " However, this game sucks. Please continue" );
-      currentBlock.innerHTML = "";
-      var titles = document.createElement("H5");
-      titles.classList.add("crntWrd");
-      titles.innerHTML += "Current Word: <br>" + rightAnswer.join();
-      currentBlock.appendChild(titles);
-      
-
-      
-
-
-
+			}
 		} else {
-			console.log("else");
+			// User chose the wrong answer.
 			gameChances--;
-			var score = document.getElementById("score");
+			const score = document.getElementById("score");
 			score.innerHTML = gameChances;
 
 			this.classList.add("d-none");
 			hangImage.innerHTML = "";
-			hangManImage1();
-			var pressedBtn = document.createElement("BUTTON");
+			hangManImage();
+			const pressedBtn = document.createElement("BUTTON");
 			pressedBtn.classList.add("d-inline-block", "letter", "letter-button-color");
 			pressedBtn.innerHTML += this.getAttribute("data-letter");
 			typedBlock.appendChild(pressedBtn);
+			// User lost.
 			if (gameChances === 0) {
 				keyContainer.innerHTML = "";
-				var keyBoard = document.createElement("SPAN");
-				keyBoard.classList.add("typed", "text-danger", "d-block", "py-3");
-				keyBoard.innerHTML += "<h1>NATURAL SELECTION IS COMING FOR YOU!!!!</h1> <button id='resetBtn' class='startButton btn btn-primary greenBg my-3'>Start The Game</button> ";
-				keyContainer.appendChild(keyBoard);
-				var resetButton = document.getElementById("resetBtn")
-				resetButton.addEventListener("click", function (event) {
-					location.reload();
-				});
+				const lseTxt = document.createElement("SPAN");
+				lseTxt.classList.add("typed", "text-danger", "d-block", "py-3");
+				const h1 = document.createElement("H1");
+				h1.innerText = "NATURAL SELECTION IS COMING FOR YOU!!!";
+
+				const button = createBtn("resetBtn", "danger", "Reset The Game");
+
+				lseTxt.appendChild(h1);
+				lseTxt.appendChild(button);
+				keyContainer.appendChild(lseTxt);
+				const resetButton = document.getElementById("resetBtn");
+				resetButton.addEventListener("click", restart);
 
 			}
 		}
 	}
-}
-*/
-function startGame() {
-	homeScreen();
-	clearBoard();
-	loadScoreBoard();
-	loadLogo();
-	hangManImage();
-	enableButtons();
-	playingLogic();
+
+	function genKeys() {
+		keyContainer.innerHTML = "";
+		// Create the keyboard.
+		for (let i = 0; i < letters.length; i++) {
+			let answer = letters[i];
+			const letterBtn = document.createElement("BUTTON");
+			letterBtn.classList.add("letter", "letter-button", "letter-button-color");
+			letterBtn.setAttribute("data-letter", answer);
+			letterBtn.innerHTML += answer;
+			keyContainer.appendChild(letterBtn);
+			letterBtn.onclick = beginGame;
+		}
+	}
+
+	// Function that takes in a string and a character argument and iterates through the string... 
+	// returning an array with the index's of the character.  
+	function charPos(str, char) {
+		return str
+			.split("")
+			.map((c, i) => {
+				if (c == char) return i;
+			})
+			.filter((v) => {
+				return v >= 0;
+			});
+	}
+	// Reset the game.
+	function restart() {
+		location.reload();
+	}
+	// Function to generate the buttons.
+	function createBtn(id, style, text) {
+		const button = document.createElement("BUTTON");
+		button.setAttribute("id", id);
+		button.classList.add("btn", "btn-" + style, "my-3", "ml-2");
+		button.innerText = text;
+		return button;
+	}
+
 }
 
-/*
-// 1. Page loads: play song, add heading <h1>Hangman The Game!!!</h1>, add subtext <p class="subText">You have three options below. Choose Wisely</p>
-// 2. Load two Buttons.  
-// 3. btn-1: Instructions(empty() container and add uL with easy instructions and the game mascot right container)
-// 4. btn-2: Start Game ()empty() container and replace column 1 with "_" for the game and add img state[0] to column 2 also have a keys that have already been pressed.
-// 5. toggle keys and give them the ability to have user either type, or click on the letters to add them to the game. each key onlick gets a sound byte
-// 6. math.random() to create the random word phrase to be used as computers choice. 
-// 7. If user clicks on a letter that is contained in randomWord and that letter gets removes and user gets to choose another letter.
-// 7.0 This goes on until user gets all letters in randomWord or user then a sound byte plays and <h1> appears on the screen and a button to play again appears. 
-// 7.1  if users presses the wrong key gameChances--: then a red X pops ups with a sound byte, letter is marked red and the image in column 2 changes to next state.
-// this goes on until user gets the right answer or  gameChances <= 0; 
-// 7.2  if gameChances <= 0 red X pops ups with a sound byte .empty and add <h1> saying user sucks and should reconsider his place on earth.
-*/
+// Start the game. 
+function startGame() {
+	clearBoard();
+	loadScoreBoard();
+	playingLogic();
+}
