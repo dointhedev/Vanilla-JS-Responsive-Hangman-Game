@@ -68,7 +68,6 @@ function audioSet() {
 // Function generates the home screen.
 function homeScreen() {
 	loadLogo();
-	loadAudio();
 	const titles = document.createElement("H3");
 	titles.classList.add("welcome");
 	titles.innerHTML += "Welcome to Hangman: A Musical Journey";
@@ -176,6 +175,8 @@ function playingLogic() {
 	genContArea();
 	// Generate default hangman img.
 	hangManImgInit();
+	// Start the music
+	loadAudio();
 
 	// game setup.
 	const randomNames = hangedNames[Math.floor(Math.random() * hangedNames.length)];
