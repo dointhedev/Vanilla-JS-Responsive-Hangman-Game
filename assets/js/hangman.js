@@ -33,6 +33,9 @@ function clearBoard() {
 	logo.innerHTML = "";
 	currentBlock.innerHTML = "";
 	typedBlock.innerHTML = "";
+	scoreBoard.innerHTML = "";
+	winBoard.innerHTML = "";
+	audioBoard.innerHTML = "";
 }
 
 // Function to load the audio when the game loads.
@@ -82,7 +85,7 @@ function homeScreen() {
 	giphy.innerHTML += "<iframe src='https://giphy.com/embed/l2JhGk8rR9WFLEDQY' width='426' height='480' frameBorder='0' class='giphy-embed' allowFullScreen></iframe><p><a href='https://giphy.com/gifs/gifitup-gif-it-up-europeana-l2JhGk8rR9WFLEDQY'>via GIPHY</a></p>";
 	hangImage.appendChild(giphy);
 	// Onclick event to start the game.
-	playButton.onclick = startGame;
+	playButton.onclick = playingLogic;
 }
 
 function loadScoreBoard() {
@@ -167,6 +170,8 @@ function genContArea() {
 function playingLogic() {
 	// Clear previous data.
 	clearBoard();
+	// Load Score Board
+	loadScoreBoard();
 	// Generate content area.
 	genContArea();
 	// Generate default hangman img.
@@ -312,11 +317,4 @@ function playingLogic() {
 		return button;
 	}
 
-}
-
-// Start the game. 
-function startGame() {
-	clearBoard();
-	loadScoreBoard();
-	playingLogic();
 }
